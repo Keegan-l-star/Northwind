@@ -9,10 +9,27 @@ package com.mycompany.northwind;
  * @author kllew
  *
  */
+
 import javax.swing.*;
 public class Northwind {
 
     public static void main(String[] args) {
+        
+        String proto = System.getenv("dvdrental_DB_PROTO");
+        String host = System.getenv("dvdrental_DB_HOST");
+        String port = System.getenv("dvdrental_DB_PORT");
+        String dbName = System.getenv("dvdrental_DB_NAME");
+        String username = System.getenv("dvdrental_DB_USERNAME");
+        String password = System.getenv("dvdrental_DB_PASSWORD");
+
+        // Check for missing variables
+        if (proto == null || host == null || port == null || dbName == null || username == null || password == null) {
+            System.err.println("Missing one or more required environment variables.");
+            System.exit(1);
+        }
+        String url = String.format("jdbc:%s://%s:%s/%s", proto, host, port, dbName);
+        TheConnection connect=new TheConnection(url,username,password);
+        
         JFrame frame = new JFrame("Northwind Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -21,17 +38,10 @@ public class Northwind {
         JTabbedPane tabbedPane = new JTabbedPane();
         // Creating the tabs 
         JPanel homePanel = new JPanel();
-        JPanel employeesPanel = new JPanel();
+        EmployeesTab employeesPanel = new EmployeesTab(connect);
         JPanel productsPanel = new JPanel();
         JPanel reportPanel = new JPanel();
         JPanel notiTab = new JPanel();
-        
-        
-        //Woking on the Employees tab
-        String[] columns = {
-            "First Name", "Last Name", "Address", "Address Line 2", "City",
-            "Region", "Postal Code", "Phone", "Office", "Active"
-        };
         //Giving the tabs names
         // links the tabs to the tabbed pane like jquery
         tabbedPane.addTab("Home", homePanel);
