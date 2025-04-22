@@ -2,6 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 
+//SELECT first_name,last_name,address,city,country_region,zip_postal_code,business_phone,home_phone,mobile_phone,company FROM employees;
 package com.mycompany.northwind;
 
 /**
@@ -11,19 +12,15 @@ package com.mycompany.northwind;
  */
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-
 
 public class Northwind {
 
     public static void main(String[] args) {
         System.out.println("Program opened");
-        Connection connect = getDatabaseConnection();
+        Connection conn = Connect.getInstance();
         
-        if (connect == null) {
+        if (conn == null) {
             JOptionPane.showMessageDialog(null,
                 "Unable to connect to the database. Please check your environment variables.",
                 "Database Connection Error",
@@ -39,52 +36,23 @@ public class Northwind {
         JTabbedPane tabbedPane = new JTabbedPane();
 
         // Creating the tabs
-        JPanel homePanel = new JPanel();
+        
         
         // Creation of the employees Panel
-        JPanel employeesPanel = new JPanel();
-        
-        String[] columns = {
-            "First Name", "Last Name", "Address", "Address Line 2", "City",
-            "Region", "Postal Code", "Phone", "Office", "Active"
-        };
-        
-        employeesPanel.setLayout(new BoxLayout(employeesPanel, BoxLayout.Y_AXIS));
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        JTable table= new JTable(model);
-        JScrollPane scrollPane= new JScrollPane(table);
-        employeesPanel.add(scrollPane);
-        
+        EmployeesTab employeesPanel = new EmployeesTab(conn); 
         //End of the connection of the employess Panel
         //Beginning of the Product creation 
-        JPanel productsPanel = new JPanel();
-        JPanel reportPanel = new JPanel();
-        JPanel notiTab = new JPanel();
-
+        //ProductsTab productsPanel = new ProductsTab(connect);
+       
         // Add tabs
-        tabbedPane.addTab("Home", homePanel);
-        tabbedPane.addTab("Employees", employeesPanel);
-        tabbedPane.addTab("Products", productsPanel);
-        tabbedPane.addTab("Report", reportPanel);
-        tabbedPane.addTab("Notifications", notiTab);
+        tabbedPane.addTab("Employees", employeesPanel.GetFrame());
+        tabbedPane.addTab("Products",new ProductsTab(conn));
+        tabbedPane.addTab("Report", new ReportTab(conn));
+        tabbedPane.addTab("Notifications", new NotificationsTab(conn));
 
         frame.add(tabbedPane);
         frame.setVisible(true);
-    }
-    
-    
-    private static Connection getDatabaseConnection() {
-        String url = "jdbc:mariadb://localhost:3306/u24594522_u24641342_northwind [root on Default schema]";
-        String username = "root";
-        String password = "password";
-
-        try {
-            Connection conn = DriverManager.getConnection(url, username, password);
-            System.out.println("Database connected successfully!");
-            return conn;
-        } catch (SQLException e) {
-            System.out.println("Error connecting to the database: " + e.getMessage());
-            return null;
-        }
+        
+        
     }
 }
